@@ -1,5 +1,18 @@
 # Folders
 tmp/
+vendor/
+_obj
+_test
 
 # Files
 .env
+
+# compiled binary files
+.exe
+.out
+
+# macOS specif files
+.DS_Store
+
+# output
+*.out
