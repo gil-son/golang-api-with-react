@@ -14,19 +14,26 @@ type Todo struct {
 }
 
 func main() {
-	fmt.Println("Hello worlds")
+	fmt.Println("Hello world")
 	app := fiber.New()
 
 	todos := []Todo{}
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.Status(200).JSON(fiber.Map{"msg": "hello world"})
+	app.Get("/api/todos", func(c *fiber.Ctx) error {
+		return c.Status(200).JSON(todos)
 	})
 
 	app.Post("/api/todos", func(c *fiber.Ctx) error {
 		todo := &Todo{}
-
-		if err := c.BodyParser(todo); err != nil {
+		
+		/*
+			err := c.BodyParser(todo)
+			if err != nil { // This is the condition being checked
+				return err
+			}
+		*/
+		
+		if err := c.BodyParser(todo); err != nil { // err call a method and that likely return an error; if err is different than null, it has an error
 			return err
 		}
 
@@ -52,6 +59,22 @@ func main() {
 
 		return c.Status(404).JSON(fiber.Map{"error": "Todo not found"})
 	})
+
+
+	app.Delete("/api/todos/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+
+		for i, todo := range todos {
+			if fmt.Sprint(todo.ID) == id {
+				todos = append(todos[:i], todos[i+1:]...)
+				return c.Status(200).JSON(todos[i])
+			}
+		}
+
+		return c.Status(404).JSON(fiber.Map{"error": "Todo not found"})
+	})
+
+
 
 	log.Fatal(app.Listen(":4000"))
 }
